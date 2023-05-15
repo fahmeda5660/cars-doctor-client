@@ -1,22 +1,49 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import img from '../../assets/images/login/login.svg'
 import { useContext } from 'react';
 import { AuthContext } from '../../providers/AuthProvider';
+import SocialLogin from '../../shared/SocialLogin/SocialLogin';
 
 const Login = () => {
 
     const { signIn } = useContext(AuthContext);
+
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const from = location.state?.from?.pathname || "/";
 
     const handleLogin = event => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(name, email, password)
+        // console.log(name, email, password)
         signIn(email, password)
             .then(result => {
                 const user = result.user;
-                console.log(user);
+                navigate(from, { replace: true });
+                /*
+                const loggedUser = {
+                    email:user.email
+                }
+                */ 
+                // console.log(user, loggedUser);
+                /*
+                                fetch('https://car-doctor-server-lyart.vercel.app/jwt',{
+                    method:'POST',
+                    headers:{
+                        'content-type':'application/json'
+                    },
+                    body: JSON.stringify(loggedUser)
+                })
+                .then(res =>res.json())
+                .then(data=>{
+                    // console.log('jwt response', data);
+                    // warning: local storage is not the best place, 2nd best place
+                    localStorage.setItem('car-access-token',data.token);
+                })
+                */ 
             })
             .catch(error => console.log(error));
     }
@@ -51,6 +78,7 @@ const Login = () => {
                             </div>
                         </form>
                         <p className='my-4 text-center'>New to Car Doctors <Link className='text-orange-600 font-bold' to="/signup">Sign Up</Link> </p>
+                        <SocialLogin></SocialLogin>
                     </div>
                 </div>
             </div>
